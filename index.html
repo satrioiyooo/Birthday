@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hadiah Ulang Tahun Spesial 💝</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "MS Sans Serif", Arial, sans-serif;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .desktop {
+        width: 100vw;
+        height: 100vh;
+        background: #000080;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Desktop Mode */
+      @media (min-width: 768px) {
+        .desktop {
+          width: 90vw;
+          height: 90vh;
+          max-width: 1200px;
+          max-height: 800px;
+          border: 3px solid #fff;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+      }
+
+      /* Mobile Frame */
+      @media (max-width: 767px) {
+        body {
+          background: #000;
+        }
+      }
+
+      .loading-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000080;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        transition: opacity 0.5s;
+      }
+
+      .loading-screen.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .loading-text {
+        color: white;
+        font-size: 24px;
+        margin-bottom: 20px;
+        letter-spacing: 2px;
+      }
+
+      .progress-bar {
+        width: 300px;
+        height: 30px;
+        background: white;
+        border: 2px solid #000;
+        position: relative;
+        overflow: hidden;
+      }
+
+      @media (max-width: 767px) {
+        .loading-text {
+          font-size: 18px;
+        }
+        .progress-bar {
+          width: 250px;
+          height: 25px;
+        }
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: #000080;
+        width: 0%;
+        transition: width 0.3s;
+      }
+
+      .windows-text {
+        color: white;
+        margin-top: 20px;
+        font-size: 14px;
+      }
+
+      .audio-prompt {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #dfdfdf #808080 #808080 #dfdfdf;
+        padding: 20px;
+        z-index: 1001;
+        display: none;
+        text-align: center;
+      }
+
+      .audio-prompt.show {
+        display: block;
+      }
+
+      .audio-prompt h3 {
+        margin-bottom: 15px;
+        font-size: 14px;
+      }
+
+      .audio-prompt button {
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #fff #000 #000 #fff;
+        padding: 8px 20px;
+        cursor: pointer;
+        font-size: 12px;
+        margin: 0 5px;
+      }
+
+      .audio-prompt button:active {
+        border-color: #000 #fff #fff #000;
+      }
+
+      .desktop-area {
+        flex: 1;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 80px);
+        gap: 20px;
+        align-content: start;
+        overflow-y: auto;
+      }
+
+      @media (max-width: 767px) {
+        .desktop-area {
+          padding: 15px;
+          grid-template-columns: 1fr;
+          gap: 15px;
+        }
+      }
+
+      .desktop-icon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: transform 0.2s;
+        padding: 5px;
+      }
+
+      @media (max-width: 767px) {
+        .desktop-icon {
+          flex-direction: row;
+          gap: 10px;
+          justify-content: flex-start;
+        }
+      }
+
+      .desktop-icon:hover {
+        transform: scale(1.05);
+      }
+
+      .desktop-icon:active {
+        transform: scale(0.95);
+      }
+
+      .icon {
+        width: 50px;
+        height: 50px;
+        font-size: 40px;
+        filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+      }
+
+      @media (max-width: 767px) {
+        .icon {
+          width: 40px;
+          height: 40px;
+          font-size: 32px;
+        }
+      }
+
+      .icon-label {
+        color: white;
+        font-size: 11px;
+        text-align: center;
+        text-shadow: 1px 1px 2px #000;
+        margin-top: 5px;
+      }
+
+      @media (max-width: 767px) {
+        .icon-label {
+          text-align: left;
+          margin-top: 0;
+          font-size: 13px;
+        }
+      }
+
+      .window {
+        position: absolute;
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #dfdfdf #808080 #808080 #dfdfdf;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+        display: none;
+        flex-direction: column;
+        z-index: 100;
+      }
+
+      .window.active {
+        display: flex;
+      }
+
+      /* Desktop window sizing */
+      @media (min-width: 768px) {
+        .window {
+          top: 50px;
+          left: 100px;
+          width: 600px;
+          height: 500px;
+        }
+        .window.maximized {
+          top: 0 !important;
+          left: 0 !important;
+          width: 100% !important;
+          height: calc(100% - 40px) !important;
+        }
+      }
+
+      /* Mobile full screen */
+      @media (max-width: 767px) {
+        .window {
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: calc(100% - 40px);
+        }
+      }
+
+      .title-bar {
+        background: linear-gradient(to right, #000080, #1084d0);
+        color: white;
+        padding: 3px 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: move;
+        user-select: none;
+        min-height: 20px;
+      }
+
+      .title-text {
+        font-weight: bold;
+        font-size: 12px;
+      }
+
+      .window-buttons {
+        display: flex;
+        gap: 2px;
+      }
+
+      .window-button {
+        width: 16px;
+        height: 14px;
+        background: #c0c0c0;
+        border: 1px solid;
+        border-color: #fff #000 #000 #fff;
+        cursor: pointer;
+        font-size: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+
+      .window-button:active {
+        border-color: #000 #fff #fff #000;
+      }
+
+      .window-content {
+        flex: 1;
+        background: white;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .birthday-header {
+        background: #000080;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        border: 3px solid;
+        border-color: #dfdfdf #808080 #808080 #dfdfdf;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        flex-shrink: 0;
+      }
+
+      @media (max-width: 767px) {
+        .birthday-header {
+          padding: 10px;
+          font-size: 14px;
+        }
+      }
+
+      .birthday-title {
+        color: #ffd700;
+        font-size: 26px;
+        text-align: center;
+        margin: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        flex-shrink: 0;
+      }
+
+      @media (max-width: 767px) {
+        .birthday-title {
+          font-size: 20px;
+          margin: 15px 10px;
+        }
+      }
+
+      .message-box {
+        background: #fff;
+        border: 2px solid #808080;
+        padding: 15px;
+        margin: 0 15px 15px 15px;
+        line-height: 1.6;
+        font-size: 13px;
+        flex: 1;
+        overflow-y: auto;
+      }
+
+      @media (max-width: 767px) {
+        .message-box {
+          font-size: 11px;
+          padding: 12px;
+          margin: 0 10px 10px 10px;
+        }
+      }
+
+      .message-box p {
+        margin-bottom: 10px;
+      }
+
+      .music-player {
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #dfdfdf #808080 #808080 #dfdfdf;
+        padding: 20px;
+        text-align: center;
+        margin: 15px;
+      }
+
+      .music-title {
+        font-size: 14px;
+        margin-bottom: 10px;
+        font-weight: bold;
+      }
+
+      .music-subtitle {
+        font-size: 12px;
+        margin-bottom: 15px;
+        color: #333;
+      }
+
+      .play-button {
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #fff #000 #000 #fff;
+        padding: 15px 30px;
+        cursor: pointer;
+        font-size: 24px;
+        margin: 10px;
+        display: inline-block;
+      }
+
+      .play-button:active {
+        border-color: #000 #fff #fff #000;
+      }
+
+      .time-display {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        margin: 10px 0;
+      }
+
+      .volume-control {
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .volume-control input {
+        width: 200px;
+      }
+
+      .photo-viewer {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 15px;
+      }
+
+      .photo-counter {
+        text-align: center;
+        margin-bottom: 10px;
+        font-weight: bold;
+        font-size: 12px;
+      }
+
+      .photo-frame {
+        background: white;
+        padding: 20px;
+        border: 2px solid #808080;
+        text-align: center;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-bottom: 15px;
+      }
+
+      .photo-placeholder {
+        font-size: 100px;
+        margin-bottom: 20px;
+      }
+
+      @media (max-width: 767px) {
+        .photo-placeholder {
+          font-size: 80px;
+        }
+      }
+
+      .photo-caption {
+        font-size: 16px;
+        font-weight: bold;
+      }
+
+      .nav-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .nav-button {
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #fff #000 #000 #fff;
+        padding: 8px 15px;
+        cursor: pointer;
+        font-size: 11px;
+      }
+
+      .nav-button:active {
+        border-color: #000 #fff #fff #000;
+      }
+
+      .resolutions-container {
+        padding: 20px;
+        overflow-y: auto;
+      }
+
+      .resolutions-container h3 {
+        font-size: 16px;
+        margin-bottom: 15px;
+      }
+
+      .resolutions-list {
+        list-style: none;
+        padding-left: 0;
+      }
+
+      .resolutions-list li {
+        padding: 10px;
+        margin: 8px 0;
+        background: #f0f0f0;
+        border-left: 4px solid #000080;
+        font-size: 12px;
+      }
+
+      .resolutions-footer {
+        margin-top: 20px;
+        font-style: italic;
+        font-size: 12px;
+        text-align: center;
+      }
+
+      /* Notepad untuk wish */
+      .notepad-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 10px;
+      }
+
+      .notepad-textarea {
+        flex: 1;
+        border: 2px inset #808080;
+        padding: 10px;
+        font-family: "Courier New", monospace;
+        font-size: 12px;
+        resize: none;
+        background: white;
+      }
+
+      .notepad-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        justify-content: center;
+      }
+
+      .notepad-button {
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #fff #000 #000 #fff;
+        padding: 8px 20px;
+        cursor: pointer;
+        font-size: 11px;
+      }
+
+      .notepad-button:active {
+        border-color: #000 #fff #fff #000;
+      }
+
+      /* Developer Panel */
+      .dev-panel {
+        position: fixed;
+        bottom: 50px;
+        right: 10px;
+        background: #1a1a1a;
+        color: #00ff00;
+        border: 2px solid #00ff00;
+        padding: 15px;
+        font-family: "Courier New", monospace;
+        font-size: 11px;
+        max-width: 300px;
+        max-height: 400px;
+        overflow-y: auto;
+        z-index: 9999;
+        display: none;
+      }
+
+      .dev-panel.show {
+        display: block;
+      }
+
+      .dev-panel h4 {
+        color: #00ff00;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #00ff00;
+        padding-bottom: 5px;
+      }
+
+      .dev-panel .wish-entry {
+        background: #0a0a0a;
+        padding: 8px;
+        margin: 5px 0;
+        border-left: 3px solid #00ff00;
+      }
+
+      .dev-panel .timestamp {
+        color: #666;
+        font-size: 9px;
+      }
+
+      .dev-toggle {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        background: #1a1a1a;
+        color: #00ff00;
+        border: 2px solid #00ff00;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-family: "Courier New", monospace;
+        font-size: 10px;
+        z-index: 9998;
+      }
+
+      .dev-toggle:hover {
+        background: #00ff00;
+        color: #1a1a1a;
+      }
+
+      .taskbar {
+        background: #c0c0c0;
+        border-top: 2px solid #fff;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        padding: 0 5px;
+        gap: 5px;
+        flex-shrink: 0;
+      }
+
+      .start-button {
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #fff #000 #000 #fff;
+        padding: 3px 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: bold;
+        font-size: 12px;
+      }
+
+      .start-button:active {
+        border-color: #000 #fff #fff #000;
+      }
+
+      .taskbar-buttons {
+        display: flex;
+        gap: 3px;
+        flex: 1;
+        overflow-x: auto;
+      }
+
+      .taskbar-app {
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #fff #000 #000 #fff;
+        padding: 3px 10px;
+        cursor: pointer;
+        font-size: 11px;
+        white-space: nowrap;
+      }
+
+      .taskbar-app.active {
+        border-color: #000 #fff #fff #000;
+      }
+
+      .taskbar-time {
+        margin-left: auto;
+        border: 1px inset #808080;
+        padding: 3px 10px;
+        font-size: 10px;
+        text-align: center;
+      }
+
+      .final-message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: black;
+        color: #ff6b6b;
+        padding: 50px;
+        text-align: center;
+        font-size: 42px;
+        font-weight: bold;
+        text-shadow: 0 0 20px #ff6b6b, 0 0 40px #ff6b6b;
+        display: none;
+        z-index: 2000;
+        border-radius: 10px;
+        animation: glow 2s infinite;
+      }
+
+      @media (max-width: 767px) {
+        .final-message {
+          font-size: 32px;
+          padding: 40px;
+        }
+      }
+
+      /* Photo Success Modal */
+      .photo-modal {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 3000;
+      }
+
+      .photo-modal.show {
+        display: flex;
+      }
+
+      .photo-modal-content {
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #dfdfdf #808080 #808080 #dfdfdf;
+        padding: 20px;
+        max-width: 90%;
+        max-height: 90%;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .photo-modal-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #000080;
+      }
+
+      .photo-modal-image {
+        width: 300px;
+        height: 300px;
+        object-fit: cover;
+        border: 3px solid #808080;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        display: block;
+        margin: 0 auto;
+      }
+
+      @media (max-width: 767px) {
+        .photo-modal-image {
+          width: 250px;
+          height: 250px;
+        }
+      }
+
+      .photo-modal-message {
+        font-size: 14px;
+        color: #333;
+        margin: 10px 0;
+      }
+
+      .photo-modal-button {
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #fff #000 #000 #fff;
+        padding: 10px 25px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      .photo-modal-button:active {
+        border-color: #000 #fff #fff #000;
+      }
+
+      @keyframes glow {
+        0%,
+        100% {
+          text-shadow: 0 0 20px #ff6b6b, 0 0 40px #ff6b6b;
+        }
+        50% {
+          text-shadow: 0 0 30px #ff6b6b, 0 0 60px #ff6b6b, 0 0 80px #ff6b6b;
+        }
+      }
+
+      .final-message.show {
+        display: block;
+      }
+
+      audio {
+        display: none;
+      }
+
+      /* Fireworks */
+      .fireworks-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 4000;
+        display: none;
+      }
+
+      .fireworks-container.show {
+        display: block;
+      }
+
+      .firework {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        animation: explode 1s ease-out forwards;
+      }
+
+      @keyframes explode {
+        0% {
+          transform: translate(0, 0);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(var(--tx), var(--ty));
+          opacity: 0;
+        }
+      }
+
+      .fireworks-text {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 48px;
+        font-weight: bold;
+        color: #ffd700;
+        text-shadow: 0 0 20px #fff, 0 0 30px #ffd700, 0 0 40px #ffd700;
+        z-index: 4001;
+        animation: pulse 1s ease-in-out infinite;
+        pointer-events: none;
+        display: none;
+      }
+
+      .fireworks-text.show {
+        display: block;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: translate(-50%, -50%) scale(1);
+        }
+        50% {
+          transform: translate(-50%, -50%) scale(1.1);
+        }
+      }
+
+      @media (max-width: 767px) {
+        .fireworks-text {
+          font-size: 32px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="desktop">
+      <div class="loading-screen" id="loadingScreen">
+        <div class="loading-text">LOADING...</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="windows-text">WINDOWS 95</div>
+      </div>
+
+      <div class="audio-prompt" id="audioPrompt">
+        <h3>🎵 Putar musik latar belakang?</h3>
+        <button onclick="enableBackgroundMusic(true)">Ya, Putar Musik!</button>
+        <button onclick="enableBackgroundMusic(true)">Tidak, Tidak salah lagi hehe</button>
+      </div>
+
+      <div class="desktop-area">
+        <div class="desktop-icon" onclick="openWindow('birthdayWindow')">
+          <div class="icon">🎁</div>
+          <div class="icon-label">Present.exe</div>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('cakeWindow')">
+          <div class="icon">🎂</div>
+          <div class="icon-label">Cake.exe</div>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('galleryWindow')">
+          <div class="icon">📷</div>
+          <div class="icon-label">Gallery.jpg</div>
+        </div>
+        <div class="desktop-icon" onclick="openWindow('wishWindow')">
+          <div class="icon">📝</div>
+          <div class="icon-label">Notepad.exe</div>
+        </div>
+      </div>
+
+      <!-- Birthday Window -->
+      <div class="window" id="birthdayWindow">
+        <div class="title-bar">
+          <span class="title-text">HAPPY_BIRTHDAY.TXT</span>
+          <div class="window-buttons">
+            <div class="window-button" onclick="toggleMaximize('birthdayWindow')">□</div>
+            <div class="window-button" onclick="closeWindow('birthdayWindow')">×</div>
+          </div>
+        </div>
+        <div class="window-content">
+          <div class="birthday-header">🎉 ❤️ HAPPY BIRTHDAY ❤️ 🎉</div>
+          <div class="birthday-title">SELAMAT ULANG TAHUN KE-23</div>
+          <div class="message-box">
+            <p><strong>Haiii, selamat ulang tahun yayang aaayaaangkuuu! ❤️</strong></p>
+            <p>Semoga hari ini esok dan selamanya kamu bahagia teruuusss, segala keinginanmu tercapai, dan dipermudah dalam menjalani hari-hari!</p>
+            <p>Aku selalu bersyukur bisa ngeliat kamu jadi versi terbaik dari dirimu, yang kadang-kadang lucu cekali, tapi juga kadang lutuu angeeeetttt loplop!!.</p>
+            <p>
+              Teyimakasih sudah mau jadi temen curhat, temen jalan-jalan, dan semangat aku dalam menjalani hari-hari. Semoga tahun ini kamu makin khewrenn, makin banyak momen bahagia, dan makin dicintai oleh orang-orang di sekitar kamuu.
+            </p>
+            <p><strong>Jangan lupa, kita bakal terus jalan bareng, ngejar mimpi, dan ngelewatin segala rintangan di hidup ini dengan penuh cinta dan senyumann! 💕✨</strong></p>
+            <p>*kiss kisss*</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cake Window -->
+      <div class="window" id="cakeWindow">
+        <div class="title-bar">
+          <span class="title-text">NOTEPAD.EXE - Resolusi</span>
+          <div class="window-buttons">
+            <div class="window-button" onclick="toggleMaximize('cakeWindow')">□</div>
+            <div class="window-button" onclick="closeWindow('cakeWindow')">×</div>
+          </div>
+        </div>
+        <div class="window-content">
+          <div class="resolutions-container">
+            <h3>Resolusi Tahun Baru:</h3>
+            <ul class="resolutions-list">
+              <li>1. Bersyukur setiap hari</li>
+              <li>2. Lebih banyak tersenyum</li>
+              <li>3. Mencapai target-target baru</li>
+              <li>4. Menjelajah tempat-tempat baru</li>
+              <li>5. Memiliki badan yang sehat jasmani dan rohani</li>
+            </ul>
+            <div class="resolutions-footer">Semoga tahun ini menjadi tahun yang penuh berkah! AAMIIN!!</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gallery Window -->
+      <div class="window" id="galleryWindow">
+        <div class="title-bar">
+          <span class="title-text">GALLERY_VIEWER</span>
+          <div class="window-buttons">
+            <div class="window-button" onclick="toggleMaximize('galleryWindow')">□</div>
+            <div class="window-button" onclick="closeWindow('galleryWindow')">×</div>
+          </div>
+        </div>
+        <div class="window-content">
+          <div class="photo-viewer">
+            <div class="photo-counter" id="photoCounter">1/4</div>
+            <div class="photo-frame">
+              <div class="photo-placeholder" id="photoEmoji">🌟</div>
+              <div class="photo-caption" id="photoCaption">Semoga</div>
+            </div>
+            <div class="nav-buttons">
+              <button class="nav-button" onclick="prevPhoto()">< Sebelumnya</button>
+              <button class="nav-button" onclick="nextPhoto()">Berikutnya ></button>
+              <button class="nav-button" onclick="showFinalMessage()">Cetak</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wish Notepad Window -->
+      <div class="window" id="wishWindow">
+        <div class="title-bar">
+          <span class="title-text">NOTEPAD.EXE - Wish untuk Kita</span>
+          <div class="window-buttons">
+            <div class="window-button" onclick="toggleMaximize('wishWindow')">□</div>
+            <div class="window-button" onclick="closeWindow('wishWindow')">×</div>
+          </div>
+        </div>
+        <div class="window-content">
+          <div class="notepad-container">
+            <textarea
+              class="notepad-textarea"
+              id="wishText"
+              placeholder="Tuliskan harapan dan doa untuk kita berdua di masa depan...
+
+Contoh:
+- Semoga kita selalu bahagia bersama
+- Bisa traveling ke banyak tempat
+- Saling support dalam karir
+- Dll..."
+            ></textarea>
+            <div class="notepad-buttons">
+              <button class="notepad-button" onclick="saveWish()">💾 Save Wish</button>
+              <button class="notepad-button" onclick="clearWish()">🗑️ Clear</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="final-message" id="finalMessage">❤️ I love you! ❤️</div>
+
+      <!-- Photo Success Modal -->
+      <div class="photo-modal" id="photoModal">
+        <div class="photo-modal-content">
+          <div class="photo-modal-title">💝 Wish Berhasil Disimpan! 💝</div>
+          <img src="images/our-photo.jpeg" alt="Foto Kita Bersama" class="photo-modal-image" id="couplePhoto" />
+          <!-- Ganti src dengan path foto Anda (format 1:1) -->
+          <!-- Contoh: src="images/our-photo.jpg" -->
+          <div class="photo-modal-message">
+            <p>Terima kasih sudah menulis harapan untuk kita berdua! ❤️</p>
+            <p>Semoga semua doa dan harapan kita terkabul 🙏✨</p>
+          </div>
+          <button class="photo-modal-button" onclick="closePhotoModal()">OK</button>
+        </div>
+      </div>
+
+      <div class="taskbar">
+        <div class="start-button" onclick="showFireworks()"><span style="font-size: 14px">⊞</span> Start</div>
+        <div class="taskbar-buttons" id="taskbarButtons"></div>
+        <div class="taskbar-time" id="taskbarTime"></div>
+      </div>
+    </div>
+
+    <!-- Fireworks -->
+    <div class="fireworks-container" id="fireworksContainer"></div>
+    <div class="fireworks-text" id="fireworksText">🎉 HAPPY BIRTHDAY! 🎂</div>
+
+    <!-- Developer Panel -->
+    <button class="dev-toggle" onclick="toggleDevPanel()">DEV</button>
+    <div class="dev-panel" id="devPanel">
+      <h4>💻 Developer Console</h4>
+      <p style="margin-bottom: 10px">Wishes yang tersimpan:</p>
+      <div id="wishList"></div>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="backgroundMusic" loop>
+      <source src="music/Jamrud - Selamat Ulang Tahun (Official Lyric Video).mp3" type="audio/mpeg" />
+      <!-- Ganti src="" dengan path lagu background Anda -->
+      <!-- Contoh: src="music/background-music.mp3" -->
+    </audio>
+    <audio id="fireworksSound">
+      <source src="music/Fireworks with Sound Effects.m4a" type="audio/mpeg" />
+      <!-- Ganti src="" dengan path sound effect kembang api Anda -->
+      <!-- Contoh: sounds/fireworks.mp3, sounds/fireworks.wav -->
+    </audio>
+
+    <script>
+      const fireworksSound = document.getElementById("fireworksSound");
+
+      let currentPhoto = 1;
+      const photos = [
+        { emoji: "🌟", caption: "Semoga" },
+        { emoji: "🎉", caption: "Hari ini" },
+        { emoji: "💝", caption: "Penuh kebahagiaan" },
+        { emoji: "🎂", caption: "Selamat ulang tahun!" },
+      ];
+
+      const backgroundMusic = document.getElementById("backgroundMusic");
+      let wishes = JSON.parse(localStorage.getItem("birthdayWishes")) || [];
+
+      window.onload = function () {
+        let progress = 0;
+        const loadInterval = setInterval(() => {
+          progress += 10;
+          document.getElementById("progressFill").style.width = progress + "%";
+          if (progress >= 100) {
+            clearInterval(loadInterval);
+            setTimeout(() => {
+              document.getElementById("loadingScreen").classList.add("hidden");
+              setTimeout(() => {
+                document.getElementById("audioPrompt").classList.add("show");
+              }, 300);
+            }, 500);
+          }
+        }, 200);
+
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Load wishes for developer
+        loadWishesForDev();
+      };
+
+      function enableBackgroundMusic(enable) {
+        document.getElementById("audioPrompt").classList.remove("show");
+        if (enable) {
+          backgroundMusic.play().catch((e) => {
+            console.log("Background music tidak dapat diputar:", e);
+          });
+        }
+        setTimeout(() => {
+          openWindow("birthdayWindow");
+        }, 300);
+      }
+
+      function formatTime(seconds) {
+        if (isNaN(seconds)) return "00:00";
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+      }
+
+      function updateTime() {
+        const now = new Date();
+        const time = now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+        const date = now.toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" });
+        document.getElementById("taskbarTime").innerHTML = time + "<br>" + date;
+      }
+
+      function openWindow(windowId) {
+        const window = document.getElementById(windowId);
+        window.classList.add("active");
+        updateTaskbar();
+      }
+
+      function closeWindow(windowId) {
+        const window = document.getElementById(windowId);
+        window.classList.remove("active");
+        window.classList.remove("maximized");
+        updateTaskbar();
+      }
+
+      function toggleMaximize(windowId) {
+        const window = document.getElementById(windowId);
+        window.classList.toggle("maximized");
+      }
+
+      function updateTaskbar() {
+        const taskbarButtons = document.getElementById("taskbarButtons");
+        taskbarButtons.innerHTML = "";
+
+        const activeWindows = document.querySelectorAll(".window.active");
+        activeWindows.forEach((window) => {
+          const button = document.createElement("div");
+          button.className = "taskbar-app active";
+          button.textContent = window.querySelector(".title-text").textContent.substring(0, 20);
+          button.onclick = () => (window.style.zIndex = Math.max(...Array.from(document.querySelectorAll(".window")).map((w) => parseInt(w.style.zIndex) || 100)) + 1);
+          taskbarButtons.appendChild(button);
+        });
+      }
+
+      function changeVolume() {
+        const volume = document.getElementById("volumeSlider").value;
+        backgroundMusic.volume = volume / 100;
+      }
+
+      function nextPhoto() {
+        currentPhoto = (currentPhoto % 4) + 1;
+        updatePhoto();
+
+        // Jika sudah di foto ke-4 dan tekan berikutnya, otomatis cetak
+        if (currentPhoto === 4) {
+          setTimeout(() => {
+            showFinalMessage();
+          }, 500);
+        }
+      }
+
+      function prevPhoto() {
+        currentPhoto = currentPhoto - 1;
+        if (currentPhoto < 1) currentPhoto = 4;
+        updatePhoto();
+      }
+
+      function updatePhoto() {
+        const photo = photos[currentPhoto - 1];
+        document.getElementById("photoCounter").textContent = `${currentPhoto}/4`;
+        document.getElementById("photoEmoji").textContent = photo.emoji;
+        document.getElementById("photoCaption").textContent = photo.caption;
+      }
+
+      function showFinalMessage() {
+        document.getElementById("finalMessage").classList.add("show");
+        setTimeout(() => {
+          document.getElementById("finalMessage").classList.remove("show");
+        }, 3000);
+      }
+
+      function saveWish() {
+        const wishText = document.getElementById("wishText").value.trim();
+        if (!wishText) {
+          alert("Silakan tulis wish terlebih dahulu!");
+          return;
+        }
+
+        const wish = {
+          text: wishText,
+          timestamp: new Date().toLocaleString("id-ID"),
+          id: Date.now(),
+        };
+
+        wishes.push(wish);
+        localStorage.setItem("birthdayWishes", JSON.stringify(wishes));
+
+        // Tampilkan foto modal
+        document.getElementById("photoModal").classList.add("show");
+        document.getElementById("wishText").value = "";
+        loadWishesForDev();
+      }
+
+      function closePhotoModal() {
+        document.getElementById("photoModal").classList.remove("show");
+      }
+
+      function clearWish() {
+        if (confirm("Hapus semua teks?")) {
+          document.getElementById("wishText").value = "";
+        }
+      }
+
+      function toggleDevPanel() {
+        const panel = document.getElementById("devPanel");
+        panel.classList.toggle("show");
+        if (panel.classList.contains("show")) {
+          loadWishesForDev();
+        }
+      }
+
+      function loadWishesForDev() {
+        const wishList = document.getElementById("wishList");
+        wishList.innerHTML = "";
+
+        if (wishes.length === 0) {
+          wishList.innerHTML = '<p style="color: #666;">Belum ada wish yang tersimpan.</p>';
+          return;
+        }
+
+        wishes.forEach((wish, index) => {
+          const entry = document.createElement("div");
+          entry.className = "wish-entry";
+          entry.innerHTML = `
+                    <div style="margin-bottom: 5px;"><strong>Wish #${index + 1}</strong></div>
+                    <div style="white-space: pre-wrap;">${wish.text}</div>
+                    <div class="timestamp">${wish.timestamp}</div>
+                `;
+          wishList.appendChild(entry);
+        });
+      }
+
+      // Fireworks function
+      function showFireworks() {
+        const container = document.getElementById("fireworksContainer");
+        const text = document.getElementById("fireworksText");
+
+        fireworksSound.currentTime = 0;
+        fireworksSound.play().catch(() => {
+          console.log("Autoplay fireworks sound diblokir browser");
+        });
+
+        container.classList.add("show");
+        text.classList.add("show");
+
+        const colors = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#ff00ff", "#00ffff", "#ffa500", "#ff1493"];
+
+        // Create multiple fireworks
+        for (let i = 0; i < 5; i++) {
+          setTimeout(() => {
+            createFirework(colors);
+          }, i * 700);
+        }
+
+        // Hide after 3 seconds
+        setTimeout(() => {
+          container.classList.remove("show");
+          text.classList.remove("show");
+          container.innerHTML = "";
+        }, 7000);
+      }
+
+      function createFirework(colors) {
+        const container = document.getElementById("fireworksContainer");
+        const x = Math.random() * window.innerWidth;
+        const y = Math.random() * (window.innerHeight * 0.6);
+        const color = colors[Math.floor(Math.random() * colors.length)];
+
+        // Create particles
+        for (let i = 0; i < 30; i++) {
+          const particle = document.createElement("div");
+          particle.className = "firework";
+          particle.style.left = x + "px";
+          particle.style.top = y + "px";
+          particle.style.backgroundColor = color;
+
+          const angle = (Math.PI * 2 * i) / 30;
+          const velocity = 50 + Math.random() * 50;
+          const tx = Math.cos(angle) * velocity;
+          const ty = Math.sin(angle) * velocity;
+
+          particle.style.setProperty("--tx", tx + "px");
+          particle.style.setProperty("--ty", ty + "px");
+
+          container.appendChild(particle);
+
+          setTimeout(() => {
+            particle.remove();
+          }, 7000);
+        }
+      }
+
+      // Drag window functionality (only for desktop)
+      let draggedWindow = null;
+      let offsetX, offsetY;
+
+      if (window.innerWidth >= 768) {
+        document.addEventListener("mousedown", (e) => {
+          if (e.target.classList.contains("title-bar")) {
+            draggedWindow = e.target.parentElement;
+            if (!draggedWindow.classList.contains("maximized")) {
+              const rect = draggedWindow.getBoundingClientRect();
+              offsetX = e.clientX - rect.left;
+              offsetY = e.clientY - rect.top;
+              draggedWindow.style.zIndex = Math.max(...Array.from(document.querySelectorAll(".window")).map((w) => parseInt(w.style.zIndex) || 100)) + 1;
+            }
+          }
+        });
+
+        document.addEventListener("mousemove", (e) => {
+          if (draggedWindow && !draggedWindow.classList.contains("maximized")) {
+            draggedWindow.style.left = e.clientX - offsetX + "px";
+            draggedWindow.style.top = e.clientY - offsetY + "px";
+          }
+        });
+
+        document.addEventListener("mouseup", () => {
+          draggedWindow = null;
+        });
+      }
+    </script>
+  </body>
+</html>
